@@ -4,13 +4,12 @@ const { Schema, model } = mongoose;
 
 const { isEmail } = require("validator");
 
-const userSchema = new Schema({
+const agencySchema = new Schema({
   username: {
     type: String,
+    lowercase: true,
+    unique: true,
     required: [true, "can't be blank"],
-  },
-  bioText: {
-    type: String,
   },
   about: {
     type: String,
@@ -37,12 +36,13 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Usertype must not be empty!!"],
   },
+  gigs: [{ type: Schema.Types.ObjectId, ref: "Gig" }],
+  agents: [{ type: Schema.Types.ObjectId, ref: "Agent" }],
   properties: [{ type: Schema.Types.ObjectId, ref: "Property" }],
-  jobs: [{ type: Schema.Types.ObjectId, ref: "Job" }],
 });
 
 //Password Hashing
-userSchema.pre("save", async function (next) {
+contractorsSchema.pre("save", async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified("password")) return next();
 
@@ -53,18 +53,14 @@ userSchema.pre("save", async function (next) {
   this.confirmPassword = undefined;
   next();
 });
-// userSchema.virtual("properties", {
-//   ref: "Property",
-//   foreignField: "postedBy",
-//   localField: "_id",
-// });
-userSchema.methods.correctPassword = async function (
+
+contractorsSchema.methods.correctPassword = async function (
   enteredPassword,
   password
 ) {
   return await bcrypt.compare(enteredPassword, password);
 };
 
-const User = model("User", userSchema);
+const Agency = model("agency", agencySchema);
 
-module.exports = User;
+module.exports = Agency;

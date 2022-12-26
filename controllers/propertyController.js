@@ -41,6 +41,7 @@ exports.uploadPropertyImages = upload.fields([
 ]);
 
 exports.resizePropertyImages = catchAsync(async (req, res, next) => {
+  console.log(req.files.images);
   if (!req.files.coverImage || !req.files.images) return next();
 
   // 1) Cover image

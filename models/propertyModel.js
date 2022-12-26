@@ -92,7 +92,13 @@ const propertySchema = new Schema({
   images: [String],
   postedBy: { type: Schema.Types.ObjectId, ref: "User" },
 });
-
+propertySchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "postedBy",
+    select: "-__v",
+  });
+  next();
+});
 const Property = model("Property", propertySchema);
 
 module.exports = Property;

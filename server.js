@@ -11,7 +11,12 @@ const DB = process.env.DATABASE.replace(
 );
 const localDB = process.env.DATABASE;
 
-mongoose.connect(DB).then(() => console.log("DB connection successful!"));
+mongoose
+  .connect(DB, { dbName: "propal" })
+  .then(() => console.log("DB connection successful!"))
+  .catch((err) => {
+    console.log(err);
+  });
 
 // Start Server
 app.listen(PORT, (req, res) => {
