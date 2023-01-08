@@ -19,6 +19,13 @@ const sharp = require("sharp");
 //     },
 //   });
 // });
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 
 const multerStorage = multer.memoryStorage();
 
@@ -209,7 +216,10 @@ exports.searchProperty = catchAsync(async (req, res) => {
 });
 // Get property by id
 exports.getProperty = catchAsync(async (req, res) => {
-  const property = await Property.findById(req.params.id); // find property in database by id
+  const property = await Property.findById(req.params.id).select([
+    "-isApproved",
+    "-postedBy",
+  ]); // find property in database by id
   console.log(property);
   res.status(201).json({
     status: "success",
@@ -241,15 +251,60 @@ exports.getAllProperty = catchAsync(async (req, res) => {
 
 //Update Property by Id
 
-exports.updateProperty = catchAsync(async (req, res) => {
-  const property = await Property.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
+exports.updateProperty_ = catchAsync(async (req, res, next) => {
+  // 1) Create error if user POSTs password data
+  console.log(req.body);
+  if (req.body.active) {
+    return next(new AppError("Please remove unnecessary data", 400));
+  }
 
-  res.status(201).json({
+  // 2) Filtered out unwanted fields names that are not allowed to be updated
+  const filteredBody = filterObj(
+    req.body,
+    "name",
+    "description",
+    "province",
+    "city",
+    "category",
+    "subCategory",
+    "area",
+    "price",
+    "noofbedrooms",
+    "noofgarages",
+    "noofwashrooms",
+    "images",
+    "coverImage",
+    "detailedAddress",
+    "phoneNumber",
+    "subType",
+    "title",
+    "type"
+  );
+  // if (req.startsWith('file')) {
+  //   if (req.files) {
+  //     filteredBody.images.forEach((image, index) => {
+  //       filteredBody.images[index] = req.files.images[index];
+  //     });
+  //   } else {
+  //     filteredBody.photo = req.file.filename;
+  //   }
+  // }
+
+  // 3) Update user document
+  console.log(req.body);
+  const updatedProperty = await Property.findByIdAndUpdate(
+    req.params.id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).select(["-isApproved", "-postedBy"]);
+
+  res.status(200).json({
     status: "success",
     data: {
-      property,
+      property: updatedProperty,
     },
   });
 });

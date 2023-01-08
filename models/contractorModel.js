@@ -37,6 +37,7 @@ const contractorsSchema = new Schema({
     required: [true, "Usertype must not be empty!!"],
   },
   gigs: [{ type: Schema.Types.ObjectId, ref: "Gig" }],
+  jobs: [{ type: Schema.Types.ObjectId, ref: "Job" }],
 });
 
 //Password Hashing

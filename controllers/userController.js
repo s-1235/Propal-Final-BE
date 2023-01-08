@@ -1,6 +1,9 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const User = require("./../models/userModel");
+const Agent = require("./../models/agentModel");
+const Agency = require("./../models/agencyModel");
+const Contractor = require("./../models/contractorModel");
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -38,10 +41,20 @@ const filterObj = (obj, ...allowedFields) => {
 };
 //  1)Get User
 exports.getUser = catchAsync(async (req, res) => {
-  const user = await User.findById({ _id: req.params.id }); //find user
+  let user;
+  if (req.user.userType === "user") {
+    user = await User.findById({ _id: req.params.id }); //find user
+  } else if (req.user.userType === "agent") {
+    user = await Agent.findById({ _id: req.params.id });
+  } else if (req.user.userType === "agency") {
+    user = await Agency.findById({ _id: req.params.id });
+  } else if (req.user.userType === "contractor") {
+    user = await Contractor.findById({ _id: req.params.id });
+  }
 
+  console.log("Hello");
   await user.populate("properties"); //populate the properties field
-  await user.populate("jobs");
+  req.user.userType !== "agency" ? await user.populate("jobs") : undefined;
   res.status(200).json({
     status: "success",
     data: {
@@ -87,53 +100,6 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 //     },
 //   });
 // });
-exports.getMe = catchAsync(async (req, res, next) => {
-  const doc = await User.findOne({
-    _id: req.user.id,
-  });
-  if (!doc) {
-    return next(new AppError("No Document Found With That ID", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: {
-      data: doc,
-    },
-  });
-});
-exports.updateMe = catchAsync(async (req, res, next) => {
-  // 1) Create error if user POSTs password data
-  if (req.body.password || req.body.passwordConfirm) {
-    return next(
-      new AppError(
-        "This route is not for password updates. Please use /updateMyPassword.",
-        400
-      )
-    );
-  }
-  console.log("I am in");
-  // 2) Filtered out unwanted fields names that are not allowed to be updated
-  const filteredBody = filterObj(
-    req.body,
-    "username",
-    "phone",
-    "bioText",
-    "email"
-  );
-  console.log(req.file);
-  if (req.file) filteredBody.profilePic = req.file.fieldname;
-  // 3) Update user document
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
-  token = req.headers.authorization.split(" ")[1];
-  res.status(200).json({
-    status: "success",
-    user: updatedUser,
-    token,
-  });
-});
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

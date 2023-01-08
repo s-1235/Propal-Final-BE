@@ -1,6 +1,6 @@
 //Property Model Object from propertyModel file
 // const { findByIdAndUpdate } = require('../models/userModel');
-const Contractor = require("../models/contractors");
+const Contractor = require("../models/contractorModel");
 const APIFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");

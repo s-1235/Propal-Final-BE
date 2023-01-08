@@ -5,13 +5,21 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Admin = require("../models/adminModel");
 const Email = require("../utils/email");
-
+const Contractor = require("../models/contractorModel");
+const Agent = require("../models/agentModel");
+const Agency = require("../models/agencyModel");
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
-
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
@@ -44,9 +52,17 @@ exports.signUp = catchAsync(async (req, res) => {
     bioText,
     userType,
   } = req.body);
-  console.log(data);
-
-  const user = await User.create(data);
+  let user;
+  console.log(data.userType);
+  if (data.userType === "user") {
+    user = await User.create(data);
+  } else if (data.userType === "contractor") {
+    user = await Contractor.create(data);
+  } else if (data.userType === "agency") {
+    user = await Agency.create(data);
+  } else if (data.userType === "agent") {
+    user = await Agent.create(data);
+  }
 
   const token = signToken(user._id);
   const url = `${req.protocol}://${req.get("host")}/me`;
@@ -102,7 +118,7 @@ exports.signUp = catchAsync(async (req, res) => {
 ////////////////////////////////////////////////////////////////////////////////////////////!
 exports.login = catchAsync(async (req, res, next) => {
   // 1) Get email and password
-  const { email, password } = req.body;
+  const { email, password, userType } = req.body;
 
   console.log(email, password);
 
@@ -112,8 +128,20 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 3)Get the user
-  const user = await User.findOne({ email }).select("+password");
-  console.log("this is 👤", user);
+  let user;
+  if (userType === "user") {
+    user = await User.findOne({ email }).select("+password");
+    console.log("this is 👤", user);
+  } else if (userType === "agent") {
+    user = await Agent.findOne({ email }).select("+password");
+    console.log("this is 👤", user);
+  } else if (userType === "agency") {
+    user = await Agency.findOne({ email }).select("+password");
+    console.log("this is 👤", user);
+  } else if (userType === "contractor") {
+    user = await Agency.findOne({ email }).select("+password");
+    console.log("this is 👤", user);
+  }
 
   // Check User exists or Password is incorrect
   if (!user || !(await user.correctPassword(password, user.password))) {
@@ -214,7 +242,18 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
+  let currentUser;
+  console.log(req.user);
+  currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    currentUser = await Contractor.findById(decoded.id);
+    if (!currentUser) {
+      currentUser = await Agency.findById(decoded.id);
+      if (!currentUser) {
+        currentUser = await Agent.findById(decoded.id);
+      }
+    }
+  }
   if (!currentUser) {
     return next(
       new AppError(
@@ -301,3 +340,99 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({ status: "success" });
 };
+exports.getMe = catchAsync(async (req, res, next) => {
+  let doc;
+  console.log(req.user);
+  if (req.user.userType === "user") {
+    doc = await User.findOne({
+      _id: req.user.id,
+    });
+  } else if (req.user.userType === "contractor") {
+    doc = await Contractor.findOne({
+      _id: req.user.id,
+    });
+  } else if (req.user.userType === "agency") {
+    doc = await Agency.findOne({
+      _id: req.user.id,
+    });
+  } else if (req.user.userType === "agent") {
+    doc = await Agent.findOne({
+      _id: req.user.id,
+    });
+  }
+  if (!doc) {
+    return next(new AppError("No Document Found With That ID", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: doc,
+    },
+  });
+});
+exports.updateMe = catchAsync(async (req, res, next) => {
+  // 1) Create error if user POSTs password data
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        "This route is not for password updates. Please use /updateMyPassword.",
+        400
+      )
+    );
+  }
+  console.log("I am in");
+  // 2) Filtered out unwanted fields names that are not allowed to be updated
+  const filteredBody = filterObj(
+    req.body,
+    "username",
+    "phone",
+    "bioText",
+    "email"
+  );
+  console.log(req.file);
+  if (req.file) filteredBody.profilePic = req.file.fieldname;
+  // 3) Update user document
+  if (req.user.userType === "user") {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else if (req.user.userType === "contractor") {
+    const updatedUser = await Contractor.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else if (req.user.userType === "agency") {
+    const updatedUser = await Agency.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else if (req.user.userType === "agent") {
+    const updatedUser = await Agent.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }
+  token = req.headers.authorization.split(" ")[1];
+  res.status(200).json({
+    status: "success",
+    user: updatedUser,
+    token,
+  });
+});

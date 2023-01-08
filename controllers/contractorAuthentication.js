@@ -1,9 +1,9 @@
-const Contractor = require('./../models/contractors');
-const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('../utils/appError');
-const Admin = require('../models/adminModel');
+const Contractor = require("../models/contractorModel");
+const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
+const catchAsync = require("./../utils/catchAsync");
+const AppError = require("../utils/appError");
+const Admin = require("../models/adminModel");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -19,7 +19,7 @@ exports.signUp = catchAsync(async (req, res) => {
 
   const token = signToken(contractor._id);
   res.status(201).json({
-    status: 'success',
+    status: "success",
     token,
     data: contractor,
   });
@@ -73,31 +73,34 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 2) Check if either is empty
   if (!email || !password) {
-    return next(new AppError('Email or password is empty', 400));
+    return next(new AppError("Email or password is empty", 400));
   }
 
   // 3)Get the user
-  const contractor = await Contractor.findOne({ email }).select('+password');
-  console.log('this is 👤', contractor);
+  const contractor = await Contractor.findOne({ email }).select("+password");
+  console.log("this is 👤", contractor);
 
-  await contractor.populate('gigs');
+  await contractor.populate("gigs");
 
   // Check User exists or Password is incorrect
-  if (!contractor || !(await contractor.correctPassword(password, contractor.password))) {
-    console.log('💥app error not working');
-    return next(new AppError('Password or Email incorrect', 401));
+  if (
+    !contractor ||
+    !(await contractor.correctPassword(password, contractor.password))
+  ) {
+    console.log("💥app error not working");
+    return next(new AppError("Password or Email incorrect", 401));
   }
 
-  console.log('hope');
+  console.log("hope");
   // console.log(req.headers);
 
   // Assign Token Value
   const token = signToken(contractor.id);
 
-  console.log(res, 'this is response');
+  console.log(res, "this is response");
   // console.log(req.headers);
   res.status(200).json({
-    status: 'success',
+    status: "success",
     token,
     data: contractor,
   });
@@ -109,32 +112,32 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.adminLogin = catchAsync(async (req, res, next) => {
   // 1) Get Name and password
-  console.log('reaching');
+  console.log("reaching");
   const { name, password } = req.body;
 
   // 2) Check if either is empty
   if (!name || !password) {
-    return next(new AppError('Name or password is empty', 400));
+    return next(new AppError("Name or password is empty", 400));
   }
 
   // 3)Get the user
   const admin = await Admin.findOne({ name });
   // console.log('this is 👤', admin);
-  console.log(password, 'pass1');
-  console.log(admin.password, 'pass2');
+  console.log(password, "pass1");
+  console.log(admin.password, "pass2");
   // await user.populate('properties');
   const pass = admin.password === password;
   // Check User exists or Password is incorrect
   if (!admin || !pass) {
     // console.log('💥app error not working');
-    return next(new AppError('Password or Name incorrect', 401));
+    return next(new AppError("Password or Name incorrect", 401));
   }
   admin.password = null;
   // Assign Token Value
   const token = signToken(admin.id);
-  const contractor = await Contractor.find({}).populate('gigs');
+  const contractor = await Contractor.find({}).populate("gigs");
   res.status(200).json({
-    status: 'success',
+    status: "success",
     token,
     data: { admin, contractor },
   });
@@ -147,14 +150,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(" ")[1];
   }
 
   if (!token) {
     return next(
-      new AppError('You are not logged in! Please log in to get access.', 401)
+      new AppError("You are not logged in! Please log in to get access.", 401)
     );
   }
 
@@ -166,7 +169,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!currentUser) {
     return next(
       new AppError(
-        'The user belonging to this token does no longer exist.',
+        "The user belonging to this token does no longer exist.",
         401
       )
     );

@@ -5,6 +5,7 @@ const {
   getProperty,
   getAllProperty,
   updateProperty,
+  updateProperty_,
   deleteProperty,
   unApprovedProperties,
   aliasLatestBuy,
@@ -35,7 +36,7 @@ router.route("/unApprovedProperties").get(unApprovedProperties);
 router
   .route("/:id")
   .get(getProperty)
-  .patch(updateProperty)
+  .patch(updateProperty_)
   .delete(deleteProperty); // for localhost/property/any-id-here
 
 module.exports = router;

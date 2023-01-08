@@ -18,7 +18,7 @@ const path = require("path");
 const conversationRouter = require("./routes/conversations");
 const messageRouter = require("./routes/messages");
 const gigRouter = require("./routes/gig");
-const contractorRouter = require("./routes/contractors");
+const contractorRouter = require("./routes/contractorRouter");
 const jobRouter = require("./routes/job");
 
 const app = express();

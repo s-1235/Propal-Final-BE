@@ -14,9 +14,9 @@ const {
   uploadPropertyImages,
   resizePropertyImages,
 } = require("./../controllers/propertyController.js");
-
+const { protect } = require("../controllers/authController");
 const router = express.Router(); // Initialize the Router
-
+router.use(protect);
 router.route("/").get(getAllProperty); // for localhost/property
 router.route("/search").get(searchProperty); // for localhost/property/search/key
 router.route("/latest-property-buy").get(aliasLatestBuy, getAllProperty);

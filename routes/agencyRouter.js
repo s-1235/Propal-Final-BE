@@ -1,18 +1,15 @@
 const express = require("express");
 const {
-  getUser,
-  getAllUser,
-  createUser,
-  deleteUser,
-} = require("./../controllers/userController");
-const { protect } = require("./../controllers/authController");
-const propertyRouter = require("./propertyRouter");
-const {
-  signUp,
-  login,
+  getAgent,
+  getAllAgents,
+  createAgent,
+  deleteAgent,
   getMe,
   updateMe,
-} = require("./../controllers/authController");
+} = require("./../controllers/agentController");
+// const { protect } = require("./../controllers/authController");
+const propertyRouter = require("./propertyRouter");
+const { signUp, login, protect } = require("./../controllers/authController");
 
 const router = express.Router(); //Initialize Router
 router.route("/login").post(login);

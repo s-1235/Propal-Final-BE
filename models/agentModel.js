@@ -14,6 +14,9 @@ const agentSchema = new Schema({
   bioText: {
     type: String,
   },
+  about: {
+    type: String,
+  },
   email: { type: String, validate: isEmail },
   password: { type: String, required: true, select: false },
   confirmPassword: {
@@ -38,10 +41,11 @@ const agentSchema = new Schema({
   },
   gigs: [{ type: Schema.Types.ObjectId, ref: "Gig" }],
   properties: [{ type: Schema.Types.ObjectId, ref: "Property" }],
+  jobs: [{ type: Schema.Types.ObjectId, ref: "Job" }],
 });
 
 //Password Hashing
-contractorsSchema.pre("save", async function (next) {
+agentSchema.pre("save", async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified("password")) return next();
 
@@ -53,7 +57,7 @@ contractorsSchema.pre("save", async function (next) {
   next();
 });
 
-contractorsSchema.methods.correctPassword = async function (
+agentSchema.methods.correctPassword = async function (
   enteredPassword,
   password
 ) {

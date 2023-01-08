@@ -11,6 +11,9 @@ const agencySchema = new Schema({
     unique: true,
     required: [true, "can't be blank"],
   },
+  bioText: {
+    type: String,
+  },
   about: {
     type: String,
   },
@@ -42,7 +45,7 @@ const agencySchema = new Schema({
 });
 
 //Password Hashing
-contractorsSchema.pre("save", async function (next) {
+agencySchema.pre("save", async function (next) {
   // Only run this function if password was actually modified
   if (!this.isModified("password")) return next();
 
@@ -54,7 +57,7 @@ contractorsSchema.pre("save", async function (next) {
   next();
 });
 
-contractorsSchema.methods.correctPassword = async function (
+agencySchema.methods.correctPassword = async function (
   enteredPassword,
   password
 ) {
