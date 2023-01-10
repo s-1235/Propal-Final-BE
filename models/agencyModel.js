@@ -8,7 +8,6 @@ const agencySchema = new Schema({
   username: {
     type: String,
     lowercase: true,
-    unique: true,
     required: [true, "can't be blank"],
   },
   bioText: {

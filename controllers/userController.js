@@ -44,16 +44,32 @@ exports.getUser = catchAsync(async (req, res) => {
   let user;
   if (req.user.userType === "user") {
     user = await User.findById({ _id: req.params.id }); //find user
+    await user.populate("properties");
   } else if (req.user.userType === "agent") {
     user = await Agent.findById({ _id: req.params.id });
+    await user.populate("properties");
   } else if (req.user.userType === "agency") {
     user = await Agency.findById({ _id: req.params.id });
   } else if (req.user.userType === "contractor") {
     user = await Contractor.findById({ _id: req.params.id });
   }
+  user = await User.findById({ _id: req.params.id });
+
+  user ? await user.populate("properties") : undefined;
+  if (!user) {
+    user = await Contractor.findById({ _id: req.params.id });
+    user ? await user.populate("properties") : undefined;
+    if (!user) {
+      user = await Agency.findById({ _id: req.params.id });
+      if (!user) {
+        user = await Agent.findById({ _id: req.params.id });
+        user ? await user.populate("properties") : undefined;
+      }
+    }
+  }
 
   console.log("Hello");
-  await user.populate("properties"); //populate the properties field
+  //populate the properties field
   req.user.userType !== "agency" ? await user.populate("jobs") : undefined;
   res.status(200).json({
     status: "success",

@@ -53,7 +53,7 @@ exports.signUp = catchAsync(async (req, res) => {
     userType,
   } = req.body);
   let user;
-  console.log(data.userType);
+  console.log(data);
   if (data.userType === "user") {
     user = await User.create(data);
   } else if (data.userType === "contractor") {
@@ -198,7 +198,7 @@ exports.adminLogin = catchAsync(async (req, res, next) => {
   }
 
   // 3)Get the user
-  const admin = await Admin.findOne({ username });
+  const admin = await Admin.findOne({ password });
   // console.log('this is 👤', admin);
   console.log(password, "pass1");
   console.log(admin.password, "pass2");
@@ -251,6 +251,9 @@ exports.protect = catchAsync(async (req, res, next) => {
       currentUser = await Agency.findById(decoded.id);
       if (!currentUser) {
         currentUser = await Agent.findById(decoded.id);
+        if (!currentUser) {
+          currentUser = await Admin.findById(decoded.id);
+        }
       }
     }
   }

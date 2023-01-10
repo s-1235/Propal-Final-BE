@@ -36,6 +36,7 @@ const contractorsSchema = new Schema({
     type: String,
     required: [true, "Usertype must not be empty!!"],
   },
+  properties: [{ type: Schema.Types.ObjectId, ref: "Property" }],
   gigs: [{ type: Schema.Types.ObjectId, ref: "Gig" }],
   jobs: [{ type: Schema.Types.ObjectId, ref: "Job" }],
 });
