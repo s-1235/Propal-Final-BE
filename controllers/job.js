@@ -7,7 +7,7 @@ const catchAsync = require('../utils/catchAsync');
 const Job = require('./../models/job');
 const multer = require('multer');
 const sharp = require('sharp');
-
+const Contractor = require('../models/contractorModel');
 
 const multerStorage = multer.memoryStorage();
 
@@ -33,9 +33,7 @@ exports.resizeJobImages = catchAsync(async (req, res, next) => {
   if (!req.files.coverImage || !req.files.images) return next();
 
   // 1) Cover image
-  req.body.coverImage = `job-${
-    req.params.userId
-  }-${Date.now()}-cover.jpeg`;
+  req.body.coverImage = `job-${req.params.userId}-${Date.now()}-cover.jpeg`;
   await sharp(req.files.coverImage[0].buffer)
     .resize(2000, 1333)
     .toFormat('jpeg')
@@ -47,9 +45,7 @@ exports.resizeJobImages = catchAsync(async (req, res, next) => {
 
   await Promise.all(
     req.files.images.map(async (file, i) => {
-      const filename = `job-${req.params.userId}-${Date.now()}-${
-        i + 1
-      }.jpeg`;
+      const filename = `job-${req.params.userId}-${Date.now()}-${i + 1}.jpeg`;
 
       await sharp(file.buffer)
         .resize(2000, 1333)
@@ -66,10 +62,12 @@ exports.resizeJobImages = catchAsync(async (req, res, next) => {
 
 exports.createJob = async (req, res) => {
   const data = { postedBy: req.params.userId, ...req.body };
-  // console.log(data);
+  console.log('job data=>', data);
   const job = await Job.create(data);
 
-  const user = await User.findByIdAndUpdate(
+  console.log('job db=>', job);
+  console.log('job params=>', req.params);
+  const user = await Contractor.findByIdAndUpdate(
     { _id: req.params.userId },
     { $push: { jobs: job._id } },
     { new: true }
@@ -78,8 +76,8 @@ exports.createJob = async (req, res) => {
   res.status(201).json({
     status: 'success',
     data: {
-        job,
-        user,
+      job,
+      user,
     },
   });
 };
@@ -177,8 +175,6 @@ exports.updateJob = catchAsync(async (req, res) => {
   });
 });
 
-
-
 // Delete property by Id
 exports.deleteJob = catchAsync(async (req, res) => {
   const job = await Job.findByIdAndDelete(req.params.id, {
@@ -193,4 +189,3 @@ exports.deleteJob = catchAsync(async (req, res) => {
     },
   });
 });
-
