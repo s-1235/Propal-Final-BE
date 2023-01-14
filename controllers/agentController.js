@@ -1,6 +1,7 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-const Agent = require("./../models/agencyModel");
+const Agency = require("./../models/agencyModel");
+const Agent = require("./../models/agentModel");
 
 //  1)Get Agent
 exports.getAgent = catchAsync(async (req, res) => {
@@ -17,8 +18,18 @@ exports.getAgent = catchAsync(async (req, res) => {
 });
 
 //  2)Get All agents
-exports.getAllAgent = async (req, res) => {
-  res.status(200).send("Get All Agent from database");
+exports.getAllAgents = async (req, res) => {
+  const users = await Agent.find(); //find user
+  console.log(users);
+  console.log("In Agent");
+  // await contractors.populate('gigs') //populate the properties field
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      users,
+    },
+  });
 };
 
 //  3)Create Agent

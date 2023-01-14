@@ -18,7 +18,16 @@ exports.getAgency = catchAsync(async (req, res) => {
 
 //  2)Get All agency
 exports.getAllAgencies = async (req, res) => {
-  res.status(200).send("Get All User from database");
+  const users = await Agency.find(); //find user
+  console.log(users);
+  // await contractors.populate('gigs') //populate the properties field
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      users,
+    },
+  });
 };
 
 //  3)Create agency

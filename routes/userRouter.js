@@ -4,6 +4,7 @@ const {
   getAllUser,
   createUser,
   deleteUser,
+  searchUser,
 } = require("./../controllers/userController");
 const { protect } = require("./../controllers/authController");
 const propertyRouter = require("./propertyRouter");
@@ -17,6 +18,7 @@ const {
 const router = express.Router(); //Initialize Router
 router.route("/login").post(login);
 router.route("/signup").post(signUp);
+router.route("/search").get(searchUser);
 router.use(protect);
 router.use("/:userId/properties", propertyRouter);
 router.route("/").get(getAllUser).post(createUser); // Routing for user/

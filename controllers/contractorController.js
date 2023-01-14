@@ -18,14 +18,18 @@ exports.getContractor = catchAsync(async (req, res) => {
 
 //  2)Get All User
 exports.getAllContractors = catchAsync(async (req, res) => {
-  const contractors = await Contractor.find(); //find user
-  console.log(contractors);
+  const users = await Contractor.find().select([
+    "-properties",
+    "-gigs",
+    "-jobs",
+  ]); //find user
+  console.log(users);
   // await contractors.populate('gigs') //populate the properties field
 
   res.status(200).json({
     status: "success",
     data: {
-      contractors,
+      users,
     },
   });
 });
