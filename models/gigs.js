@@ -48,7 +48,7 @@ const GigSchema = new Schema({
   },
   coverImage: String,
   images: [String],
-  postedBy: { type: Schema.Types.ObjectId, ref: "Contractor" },
+  postedBy: { type: Schema.Types.ObjectId },
 });
 
 const Gig = model("Gig", GigSchema);

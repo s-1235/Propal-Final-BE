@@ -53,21 +53,21 @@ userSchema.pre("save", async function (next) {
   this.confirmPassword = undefined;
   next();
 });
-userSchema.virtual("userproperties", {
-  ref: "Property",
-  foreignField: "postedBy",
-  localField: "_id",
-});
-userSchema.virtual("userjobs", {
-  ref: "Job",
-  foreignField: "postedBy",
-  localField: "_id",
-});
-userSchema.virtual("usergigs", {
-  ref: "Gig",
-  foreignField: "postedBy",
-  localField: "_id",
-});
+// userSchema.virtual("userproperties", {
+//   ref: "Property",
+//   foreignField: "postedBy",
+//   localField: "_id",
+// });
+// userSchema.virtual("userjobs", {
+//   ref: "Job",
+//   foreignField: "postedBy",
+//   localField: "_id",
+// });
+// userSchema.virtual("usergigs", {
+//   ref: "Gig",
+//   foreignField: "postedBy",
+//   localField: "_id",
+// });
 // userSchema.virtual("properties", {
 //   ref: "Property",
 //   foreignField: "postedBy",

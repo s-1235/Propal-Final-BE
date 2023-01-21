@@ -92,7 +92,7 @@ const propertySchema = new Schema({
   },
   coverImage: String,
   images: [String],
-  postedBy: { type: Schema.Types.ObjectId, ref: "User" },
+  postedBy: { type: Schema.Types.ObjectId },
 });
 propertySchema.pre(/^find/, function (next) {
   this.populate({
