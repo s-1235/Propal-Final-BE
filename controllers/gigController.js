@@ -4,7 +4,7 @@ const Contractor = require("../models/contractorModel");
 const APIFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-const Gig = require("./../models/gigs");
+const Gig = require("../models/gigModel");
 const multer = require("multer");
 const sharp = require("sharp");
 
@@ -132,7 +132,7 @@ exports.searchGig = catchAsync(async (req, res) => {
 
 // Get property by id
 exports.getGig = catchAsync(async (req, res) => {
-  const gig = await Gig.findById(req.params.id); // find property in database by id
+  const gig = await Gig.findById(req.params.contractorId).select("-postedBy"); // find property in database by id
 
   res.status(201).json({
     status: "success",

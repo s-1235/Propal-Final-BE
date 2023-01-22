@@ -7,6 +7,9 @@ const catchAsync = require("../utils/catchAsync");
 const Property = require("./../models/propertyModel");
 const multer = require("multer");
 const sharp = require("sharp");
+const Agent = require("./../models/agentModel");
+const Agency = require("./../models/agencyModel");
+const mongoose = require("mongoose");
 //Create Property
 
 // exports.createProperty = catchAsync(async (req, res) => {
@@ -103,13 +106,27 @@ exports.createProperty = catchAsync(async (req, res) => {
 
   const data = { postedBy: req.params.userId, ...req.body };
   // console.log(data);
+  let user;
   const property = await Property.create(data);
-
-  const user = await User.findByIdAndUpdate(
-    { _id: req.params.userId },
-    { $push: { properties: property._id } },
-    { new: true }
-  );
+  if (req.user.userType === "user") {
+    user = await User.findByIdAndUpdate(
+      { _id: req.params.userId },
+      { $push: { properties: property._id } },
+      { new: true }
+    );
+  } else if (req.user.userType === "agent") {
+    user = await Agent.findByIdAndUpdate(
+      { _id: req.params.userId },
+      { $push: { properties: property._id } },
+      { new: true }
+    );
+  } else if (req.user.userType === "agency") {
+    user = await Agency.findByIdAndUpdate(
+      { _id: req.params.userId },
+      { $push: { properties: property._id } },
+      { new: true }
+    );
+  }
 
   res.status(201).json({
     status: "success",
@@ -245,6 +262,22 @@ exports.getAllProperty = catchAsync(async (req, res) => {
     status: "success",
     data: {
       property,
+    },
+  });
+});
+
+// Get Properties of a User
+
+exports.getAUserProperties = catchAsync(async (req, res) => {
+  // const property = await Property.find({}); // find all properties from database
+  console.log(req.params);
+  const properties = await Property.find({ postedBy: { $eq: req.params.id } });
+
+  console.log(properties);
+  res.status(201).json({
+    status: "success",
+    data: {
+      properties,
     },
   });
 });

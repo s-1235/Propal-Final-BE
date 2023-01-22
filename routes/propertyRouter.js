@@ -14,6 +14,7 @@ const {
   approveProperty,
   uploadPropertyImages,
   resizePropertyImages,
+  getAUserProperties,
 } = require("./../controllers/propertyController.js");
 
 const router = express.Router(); // Initialize the Router
@@ -31,6 +32,7 @@ router.route("/:userId").post(
 );
 
 router.route("/approve/:id").patch(approveProperty);
+router.get("/userproperties/:id", getAUserProperties);
 
 router.route("/unApprovedProperties").get(unApprovedProperties);
 router
