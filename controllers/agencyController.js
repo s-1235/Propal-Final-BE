@@ -7,7 +7,6 @@ exports.getAgency = catchAsync(async (req, res) => {
   const agency = await Agency.findById({ _id: req.params.id }); //find agency
 
   await agency.populate("properties"); //populate the properties field
-  await agency.populate("agents");
   res.status(200).json({
     status: "success",
     data: {

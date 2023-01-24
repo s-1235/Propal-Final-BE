@@ -8,7 +8,6 @@ exports.getAgent = catchAsync(async (req, res) => {
   const agent = await Agent.findById({ _id: req.params.id }); //find agent
 
   await agent.populate("properties"); //populate the properties field
-  await agent.populate("jobs");
   res.status(200).json({
     status: "success",
     data: {

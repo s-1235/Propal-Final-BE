@@ -38,8 +38,6 @@ const agencySchema = new Schema({
     type: String,
     required: [true, "Usertype must not be empty!!"],
   },
-  gigs: [{ type: Schema.Types.ObjectId, ref: "Gig" }],
-  agents: [{ type: Schema.Types.ObjectId, ref: "Agent" }],
   properties: [{ type: Schema.Types.ObjectId, ref: "Property" }],
 });
 

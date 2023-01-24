@@ -39,9 +39,7 @@ const agentSchema = new Schema({
     type: String,
     required: [true, "Usertype must not be empty!!"],
   },
-  gigs: [{ type: Schema.Types.ObjectId, ref: "Gig" }],
   properties: [{ type: Schema.Types.ObjectId, ref: "Property" }],
-  jobs: [{ type: Schema.Types.ObjectId, ref: "Job" }],
 });
 
 //Password Hashing
