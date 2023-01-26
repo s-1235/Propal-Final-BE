@@ -22,7 +22,7 @@ const contractorRouter = require("./routes/contractorRouter");
 const jobRouter = require("./routes/job");
 const agentRouter = require("./routes/agentRouter");
 const agencyRouter = require("./routes/agencyRouter");
-
+const dealRouter = require("./routes/dealRouter");
 const app = express();
 app.enable("trust proxy");
 app.set("view engine", "pug");

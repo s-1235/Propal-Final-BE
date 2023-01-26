@@ -1,21 +1,21 @@
 //Property Model Object from propertyModel file
 // const { findByIdAndUpdate } = require('../models/userModel');
-const User = require('../models/userModel');
-const APIFeatures = require('../utils/apiFeatures');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
-const Job = require('./../models/job');
-const multer = require('multer');
-const sharp = require('sharp');
-const Contractor = require('../models/contractorModel');
+const User = require("../models/userModel");
+const APIFeatures = require("../utils/apiFeatures");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
+const Job = require("./../models/job");
+const multer = require("multer");
+const sharp = require("sharp");
+const Contractor = require("../models/contractorModel");
 
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
+  if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new AppError('Not an image! Please upload only images.', 400), false);
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
   }
 };
 
@@ -25,8 +25,8 @@ const upload = multer({
 });
 
 exports.uploadJobImages = upload.fields([
-  { name: 'coverImage', maxCount: 1 },
-  { name: 'images', maxCount: 6 },
+  { name: "coverImage", maxCount: 1 },
+  { name: "images", maxCount: 6 },
 ]);
 
 exports.resizeJobImages = catchAsync(async (req, res, next) => {
@@ -36,7 +36,7 @@ exports.resizeJobImages = catchAsync(async (req, res, next) => {
   req.body.coverImage = `job-${req.params.userId}-${Date.now()}-cover.jpeg`;
   await sharp(req.files.coverImage[0].buffer)
     .resize(2000, 1333)
-    .toFormat('jpeg')
+    .toFormat("jpeg")
     .jpeg({ quality: 90 })
     .toFile(`public/img/job/${req.body.coverImage}`);
 
@@ -49,7 +49,7 @@ exports.resizeJobImages = catchAsync(async (req, res, next) => {
 
       await sharp(file.buffer)
         .resize(2000, 1333)
-        .toFormat('jpeg')
+        .toFormat("jpeg")
         .jpeg({ quality: 90 })
         .toFile(`public/img/job/${filename}`);
 
@@ -62,11 +62,11 @@ exports.resizeJobImages = catchAsync(async (req, res, next) => {
 
 exports.createJob = async (req, res) => {
   const data = { postedBy: req.params.userId, ...req.body };
-  console.log('job data=>', data);
+  console.log("job data=>", data);
   const job = await Job.create(data);
 
-  console.log('job db=>', job);
-  console.log('job params=>', req.params);
+  console.log("job db=>", job);
+  console.log("job params=>", req.params);
   const user = await Contractor.findByIdAndUpdate(
     { _id: req.params.userId },
     { $push: { jobs: job._id } },
@@ -74,7 +74,7 @@ exports.createJob = async (req, res) => {
   );
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
       job,
       user,
@@ -95,7 +95,7 @@ exports.searchJob = catchAsync(async (req, res) => {
   // });
 
   var features;
-  if (key === 'all') {
+  if (key === "all") {
     features = new APIFeatures(Job.find({}), req.query)
       .filter()
       .sort()
@@ -121,7 +121,7 @@ exports.searchJob = catchAsync(async (req, res) => {
   // await gig.populate('postedBy')
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
       job,
     },
@@ -131,9 +131,8 @@ exports.searchJob = catchAsync(async (req, res) => {
 // Get property by id
 exports.getJob = catchAsync(async (req, res) => {
   const job = await Job.findById(req.params.id); // find property in database by id
-
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
       job,
     },
@@ -168,7 +167,7 @@ exports.updateJob = catchAsync(async (req, res) => {
   });
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
       job,
     },
@@ -183,7 +182,7 @@ exports.deleteJob = catchAsync(async (req, res) => {
   //Deleting property from user refernce is pending
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
       job,
     },

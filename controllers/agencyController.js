@@ -38,12 +38,12 @@ exports.createAgency = async (req, res) => {
 //  4)Patch Agency
 exports.deleteAgency = catchAsync(async (req, res, next) => {
   // res.status(200).send('Update User in database');
-  const agency = await Agency.findByIdAndDelete(req.params.id, { new: true });
+  const user = await Agency.findByIdAndDelete(req.params.id, { new: true });
 
   res.status(201).json({
     status: "success",
     data: {
-      agency,
+      user,
     },
   });
 });

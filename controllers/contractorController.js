@@ -4,14 +4,15 @@ const Contractor = require("../models/contractorModel");
 
 //  1)Get User
 exports.getContractor = catchAsync(async (req, res) => {
-  const contractors = await Contractor.findById({ _id: req.params.id }); //find user
+  const user = await Contractor.findById({ _id: req.params.id }); //find user
 
-  await contractors.populate("gigs"); //populate the properties field
-
+  await user.populate("gigs"); //populate the properties field
+  await user.populate("jobs");
+  console.log(user);
   res.status(200).json({
     status: "success",
     data: {
-      contractors,
+      user,
     },
   });
 });

@@ -5,13 +5,13 @@ const Agent = require("./../models/agentModel");
 
 //  1)Get Agent
 exports.getAgent = catchAsync(async (req, res) => {
-  const agent = await Agent.findById({ _id: req.params.id }); //find agent
+  const user = await Agent.findById({ _id: req.params.id }); //find agent
 
-  await agent.populate("properties"); //populate the properties field
+  await user.populate("properties"); //populate the properties field
   res.status(200).json({
     status: "success",
     data: {
-      agent,
+      user,
     },
   });
 });
