@@ -6,6 +6,8 @@ const DealSchema = new Schema({
     type: String,
     required: [true, "Title is required"],
   },
+  description: { type: String },
+  budget: { type: Number },
   startedAt: {
     type: Date,
     default: Date.now(),
@@ -17,6 +19,7 @@ const DealSchema = new Schema({
   serviceProvider: { type: Schema.Types.ObjectId },
   status: {
     type: Boolean,
+    default: false,
   },
 });
 

@@ -86,6 +86,7 @@ app.use("/agent", agentRouter);
 app.use("/agency", agencyRouter);
 app.use("/gig", gigRouter);
 app.use("/job", jobRouter);
+app.use("/deal", dealRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

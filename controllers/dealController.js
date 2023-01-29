@@ -28,6 +28,26 @@ exports.getAllDeals = async (req, res) => {
   });
 };
 
+//  2)Get All agents
+exports.getMyDeals = async (req, res) => {
+  let deals;
+  console.log(req.user);
+  if (req.user.userType === "user") {
+    deals = await Deal.find({ client: { $eq: req.user._id } }); //find user
+  } else {
+    console.log("here checking");
+    deals = await Deal.find({ client: { $eq: req.user._id } });
+  }
+  console.log(deals);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      deals,
+    },
+  });
+};
+
 //  3)Create Deal
 exports.createDeal = async (req, res) => {
   const deal = await Deal.create(req.body);

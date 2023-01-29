@@ -58,6 +58,7 @@ exports.getUser = catchAsync(async (req, res) => {
   user ? await user.populate("properties") : undefined;
   if (!user) {
     user = await Contractor.findById({ _id: req.params.id });
+    
     // user ? await user.populate('jobs') : undefined;
     if (!user) {
       user = await Agency.findById({ _id: req.params.id });
