@@ -1,6 +1,14 @@
 const catchAsync = require("../utils/catchAsync");
 const Deal = require("./../models/dealModel");
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 //  1)Get Agent
 exports.getDeal = catchAsync(async (req, res) => {
   const deal = await Deal.findById({ _id: req.params.id }); //find agent
@@ -88,6 +96,7 @@ exports.updateDeal = catchAsync(async (req, res) => {
 });
 
 exports.ApproveDeal = catchAsync(async (req, res) => {
+  const filteredBody = filterObj(req.body, "status");
   const deal = await Deal.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
