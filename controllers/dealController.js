@@ -86,3 +86,16 @@ exports.updateDeal = catchAsync(async (req, res) => {
     },
   });
 });
+
+exports.ApproveDeal = catchAsync(async (req, res) => {
+  const deal = await Deal.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      deal,
+    },
+  });
+});
