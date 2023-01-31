@@ -18,10 +18,11 @@ const router = express.Router(); //Initialize Router
 router.route("/login").post(login);
 router.route("/signup").post(signUp);
 router.route("/search").get(searchUser);
+router.route("/:id").get(getUser);
 router.use(protect);
 router.route("/").get(getAllUser).post(createUser); // Routing for user/
 router.route("/me").get(getMe);
 router.route("/updateMe").patch(updateMe);
-router.route("/:id").get(getUser).patch().delete(deleteUser); // Routing for user/any-id-here
+router.route("/:id").patch().delete(deleteUser); // Routing for user/any-id-here
 
 module.exports = router;
