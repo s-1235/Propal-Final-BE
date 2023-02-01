@@ -108,3 +108,20 @@ exports.ApproveDeal = catchAsync(async (req, res) => {
     },
   });
 });
+exports.EndDeal = catchAsync(async (req, res) => {
+  const filteredBody = filterObj(req.body, "endAt");
+  const deal = await Deal.findByIdAndUpdate(
+    req.params.id,
+    { endAt: Date.now() },
+    {
+      new: true,
+    }
+  );
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      deal,
+    },
+  });
+});
